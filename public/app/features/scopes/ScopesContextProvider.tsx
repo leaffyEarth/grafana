@@ -1,6 +1,5 @@
 import { createContext, ReactNode, useMemo, useContext, useEffect } from 'react';
 
-import { useGetLogsDrilldownDefaultColumnsQuery } from '@grafana/api-clients';
 import { config, locationService, ScopesContext } from '@grafana/runtime';
 
 import { ScopesApiClient } from './ScopesApiClient';
@@ -45,11 +44,6 @@ export function defaultScopesServices() {
 }
 
 export const ScopesContextProvider = ({ children, services }: ScopesContextProviderProps) => {
-  const { currentData: logsDrilldownData, error: logsDrilldownError } = useGetLogsDrilldownDefaultColumnsQuery(
-    { logsDrilldownData: false },
-    {}
-  );
-
   const memoizedServices = useMemo(() => {
     return services ?? defaultScopesServices();
   }, [services]);
