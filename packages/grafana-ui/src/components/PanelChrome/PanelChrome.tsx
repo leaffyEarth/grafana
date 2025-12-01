@@ -115,9 +115,12 @@ interface HoverHeader {
   hoverHeaderOffset?: number;
 }
 
-const MaybeWrap = ({ children }: PropsWithChildren<{}>) => {
-  const styles = useStyles2(getStyles);
-  return getFeatureToggle('preventPanelChromeOverflow') ? <div className={styles.container}>{children}</div> : children;
+const MaybeWrap = ({
+  children,
+  preventPanelChromeOverflow,
+}: PropsWithChildren<{ preventPanelChromeOverflow: boolean }>) => {
+  const styles = useStyles2(getStyles, preventPanelChromeOverflow);
+  return preventPanelChromeOverflow ? <div className={styles.container}>{children}</div> : children;
 };
 
 /**
@@ -165,7 +168,8 @@ export function PanelChrome({
   subHeaderContent,
 }: PanelChromeProps) {
   const theme = useTheme2();
-  const styles = useStyles2(getStyles);
+  const preventPanelChromeOverflow = hoverHeader && getFeatureToggle('preventPanelChromeOverflow');
+  const styles = useStyles2(getStyles, preventPanelChromeOverflow);
   const panelContentId = useId();
   const panelTitleId = useId().replace(/:/g, '_');
   const { isSelected, onSelect, isSelectable } = useElementSelection(selectionId);
@@ -350,7 +354,7 @@ export function PanelChrome({
   const hasHeaderContent = title || description || titleItems || menu || dragClass || actions;
 
   return (
-    <MaybeWrap>
+    <MaybeWrap preventPanelChromeOverflow={preventPanelChromeOverflow}>
       {/* tabIndex={0} is needed for keyboard accessibility in the plot area */}
       <section
         className={cx(
@@ -512,7 +516,7 @@ const getContentStyle = (
   return { contentStyle, innerWidth, innerHeight };
 };
 
-const getStyles = (theme: GrafanaTheme2) => {
+const getStyles = (theme: GrafanaTheme2, preventPanelChromeOverflow: boolean) => {
   const { background, borderColor } = theme.components.panel;
   const newPanelPadding = getFeatureToggle('newPanelPadding');
 
@@ -524,12 +528,12 @@ const getStyles = (theme: GrafanaTheme2) => {
       label: 'panel-container',
       backgroundColor: background,
       border: `1px solid ${borderColor}`,
-      position: getFeatureToggle('preventPanelChromeOverflow') ? 'unset' : 'relative',
+      position: preventPanelChromeOverflow ? 'unset' : 'relative',
       borderRadius: theme.shape.radius.default,
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      overflow: getFeatureToggle('preventPanelChromeOverflow') ? 'hidden' : 'initial',
+      overflow: preventPanelChromeOverflow ? 'hidden' : 'initial',
 
       '.always-show': {
         background: 'none',
