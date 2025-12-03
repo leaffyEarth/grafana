@@ -39,6 +39,8 @@ const (
 	queryTypeProfile = string(dataquery.PyroscopeQueryTypeProfile)
 	queryTypeMetrics = string(dataquery.PyroscopeQueryTypeMetrics)
 	queryTypeBoth    = string(dataquery.PyroscopeQueryTypeBoth)
+
+	exemplarsFeatureToggle = "profilesExemplars"
 )
 
 var identityTransformation = func(value float64) float64 { return value }
@@ -83,7 +85,7 @@ func (d *PyroscopeDatasource) query(ctx context.Context, pCtx backend.PluginCont
 				}
 			}
 			exemplarType := typesv1.ExemplarType_EXEMPLAR_TYPE_NONE
-			if qm.IncludeExemplars {
+			if qm.IncludeExemplars && backend.GrafanaConfigFromContext(ctx).FeatureToggles().IsEnabled(exemplarsFeatureToggle) {
 				exemplarType = typesv1.ExemplarType_EXEMPLAR_TYPE_INDIVIDUAL
 			}
 			seriesResp, err := d.client.GetSeries(

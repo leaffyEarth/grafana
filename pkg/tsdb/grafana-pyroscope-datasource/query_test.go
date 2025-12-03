@@ -158,8 +158,8 @@ func Test_levelsToTree(t *testing.T) {
 			Start: 0, Value: 100, Level: 0, Name: "root", Nodes: []*ProfileTree{
 				{
 					Start: 0, Value: 40, Level: 1, Name: "func1", Nodes: []*ProfileTree{
-					{Start: 0, Value: 15, Level: 2, Name: "func1:func3"},
-				},
+						{Start: 0, Value: 15, Level: 2, Name: "func1:func3"},
+					},
 				},
 				{Start: 40, Value: 30, Level: 1, Name: "func2"},
 			},
@@ -178,14 +178,14 @@ func Test_levelsToTree(t *testing.T) {
 			Start: 0, Value: 100, Level: 0, Name: "root", Nodes: []*ProfileTree{
 				{
 					Start: 0, Value: 40, Level: 1, Name: "func1", Nodes: []*ProfileTree{
-					{Start: 0, Value: 20, Level: 2, Name: "func1:func4"},
-				},
+						{Start: 0, Value: 20, Level: 2, Name: "func1:func4"},
+					},
 				},
 				{Start: 40, Value: 30, Level: 1, Name: "func2"},
 				{
 					Start: 70, Value: 30, Level: 1, Name: "func3", Nodes: []*ProfileTree{
-					{Start: 70, Value: 10, Level: 2, Name: "func3:func5"},
-				},
+						{Start: 70, Value: 10, Level: 2, Name: "func3:func5"},
+					},
 				},
 			},
 		}, tree)
@@ -493,15 +493,15 @@ func Test_seriesToDataFrame(t *testing.T) {
 			Series: []*Series{
 				{
 					Labels: []*LabelPair{}, Points: []*Point{
-					{
-						Timestamp: int64(1000), Value: 3000000000, // 3s in nanoseconds
-						Exemplars: []*Exemplar{{Value: 300000000, Timestamp: 1000}}, // 0.3s in nanoseconds
+						{
+							Timestamp: int64(1000), Value: 3000000000, // 3s in nanoseconds
+							Exemplars: []*Exemplar{{Value: 300000000, Timestamp: 1000}}, // 0.3s in nanoseconds
+						},
+						{
+							Timestamp: int64(2000), Value: 1500000000, // 1.5s in nanoseconds
+							Exemplars: []*Exemplar{{Value: 150000000, Timestamp: 1000}}, // 0.15s in nanoseconds
+						},
 					},
-					{
-						Timestamp: int64(2000), Value: 1500000000, // 1.5s in nanoseconds
-						Exemplars: []*Exemplar{{Value: 150000000, Timestamp: 1000}}, // 0.15s in nanoseconds
-					},
-				},
 				},
 			},
 			Units: "ns",
@@ -527,14 +527,14 @@ func Test_seriesToDataFrame(t *testing.T) {
 			Series: []*Series{
 				{
 					Labels: []*LabelPair{}, Points: []*Point{
-					{
-						Timestamp: int64(1000), Value: 150000000, // 150 MB
-						Exemplars: []*Exemplar{{Value: 15000000, Timestamp: 1000}}, // 15 MB
-					}, {
-						Timestamp: int64(2000), Value: 300000000, // 300 MB
-						Exemplars: []*Exemplar{{Value: 30000000, Timestamp: 1000}}, // 30 MB
+						{
+							Timestamp: int64(1000), Value: 150000000, // 150 MB
+							Exemplars: []*Exemplar{{Value: 15000000, Timestamp: 1000}}, // 15 MB
+						}, {
+							Timestamp: int64(2000), Value: 300000000, // 300 MB
+							Exemplars: []*Exemplar{{Value: 30000000, Timestamp: 1000}}, // 30 MB
+						},
 					},
-				},
 				},
 			},
 			Units: "bytes",
@@ -560,15 +560,15 @@ func Test_seriesToDataFrame(t *testing.T) {
 			Series: []*Series{
 				{
 					Labels: []*LabelPair{}, Points: []*Point{
-					{
-						Timestamp: int64(1000), Value: 1500, // 1500 contentions
-						Exemplars: []*Exemplar{{Value: 150, Timestamp: 1000}}, // 150 contentions
+						{
+							Timestamp: int64(1000), Value: 1500, // 1500 contentions
+							Exemplars: []*Exemplar{{Value: 150, Timestamp: 1000}}, // 150 contentions
 
-					}, {
-						Timestamp: int64(2000), Value: 3000, // 3000 contentions
-						Exemplars: []*Exemplar{{Value: 300, Timestamp: 1000}}, // 300 contentions
+						}, {
+							Timestamp: int64(2000), Value: 3000, // 3000 contentions
+							Exemplars: []*Exemplar{{Value: 300, Timestamp: 1000}}, // 300 contentions
+						},
 					},
-				},
 				},
 			},
 			Units: "short",
