@@ -91,15 +91,19 @@ const initialize = (on, config) => {
       removePDFGeneratedOnDate(inputDoc);
       removePDFGeneratedOnDate(expectedDoc);
 
+      // Normalize whitespace in both texts to handle inconsistencies in pdf-parse extraction
+      const normalizedInputText = normalizePDFText(inputDoc.text);
+      const normalizedExpectedText = normalizePDFText(expectedDoc.text);
+
       if (inputDoc.numpages !== expectedDoc.numpages) {
         console.log('PDFs do not contain the same number of pages');
         return false;
       }
 
-      if (inputDoc.text !== expectedDoc.text) {
+      if (normalizedInputText !== normalizedExpectedText) {
         console.log('PDFs do not contain the same text');
-        console.log('PDF expected text: ', expectedDoc.text);
-        console.log('PDF input text: ', inputDoc.text);
+        console.log('PDF expected text: ', normalizedExpectedText);
+        console.log('PDF input text: ', normalizedInputText);
         return false;
       }
 
@@ -123,6 +127,22 @@ const removePDFGeneratedOnDate = (pdfDoc) => {
   pdfDoc.text = pdfDoc.text.replace(regex, (match, p1, p2, p3) => {
     return `${p1} ${p3}`;
   });
+};
+
+// Normalize PDF text to handle inconsistencies in pdf-parse text extraction
+// This function normalizes whitespace and adds missing spaces between date/time patterns
+const normalizePDFText = (text) => {
+  // First, add spaces between date patterns (YYYY-MM-DD) and time patterns (HH:MM:SS) if missing
+  // This handles cases where pdf-parse extracts "2024-11-2913:05:2648" instead of "2024-11-29 13:05:2648"
+  let normalized = text.replace(/(\d{4}-\d{2}-\d{2})(\d{2}:\d{2}:\d+)/g, '$1 $2');
+
+  // Collapse all whitespace sequences (spaces, tabs, newlines) into single spaces
+  normalized = normalized.replace(/\s+/g, ' ');
+
+  // Trim leading and trailing whitespace
+  normalized = normalized.trim();
+
+  return normalized;
 };
 
 exports.initialize = initialize;
