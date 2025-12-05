@@ -2005,7 +2005,7 @@ var (
 			Description:  "Enables profiles exemplars support in profiles drilldown",
 			Stage:        FeatureStageExperimental,
 			Owner:        grafanaObservabilityTracesAndProfilingSquad,
-			FrontendOnly: true,
+			FrontendOnly: false,
 		},
 	}
 )
