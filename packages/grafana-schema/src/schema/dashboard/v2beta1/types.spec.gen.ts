@@ -1,5 +1,7 @@
 // Code generated - EDITING IS FUTILE. DO NOT EDIT.
 
+import { VariableValueOption } from "../v2alpha0";
+
 export interface AnnotationQueryKind {
 	kind: "AnnotationQuery";
 	spec: AnnotationQuerySpec;
@@ -1069,7 +1071,7 @@ export const defaultTimeRangeOption = (): TimeRangeOption => ({
 	to: "now",
 });
 
-export type VariableKind = QueryVariableKind | TextVariableKind | ConstantVariableKind | DatasourceVariableKind | IntervalVariableKind | CustomVariableKind | GroupByVariableKind | AdhocVariableKind | SwitchVariableKind;
+export type VariableKind = QueryVariableKind | TextVariableKind | ConstantVariableKind | DatasourceVariableKind | IntervalVariableKind | CustomVariableKind | GroupByVariableKind | AdhocVariableKind | SwitchVariableKind | StackVariableKind;
 
 export const defaultVariableKind = (): VariableKind => (defaultQueryVariableKind());
 
@@ -1491,6 +1493,31 @@ export const defaultSwitchVariableSpec = (): SwitchVariableSpec => ({
 	disabledValue: "false",
 	hide: "dontHide",
 	skipUrlSync: false,
+});
+
+export interface StackVariableKind {
+	kind: "StackVariable";
+	spec: StackVariableSpec;
+}
+
+export const defaultStackVariableKind = (): StackVariableKind => ({
+	kind: "StackVariable",
+	spec: defaultStackVariableSpec(),
+});
+
+export interface StackVariableSpec {
+	name: string;
+	defaultValue?: VariableOption;
+	current: VariableOption;
+	options: VariableValueOption[];
+	label?: string;
+	description?: string;
+}
+
+export const defaultStackVariableSpec = (): StackVariableSpec => ({
+	name: "",
+	current: { text: "", value: "", },
+	options: [],
 });
 
 export interface Spec {

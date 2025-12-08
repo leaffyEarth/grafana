@@ -24,7 +24,8 @@ export type TypedVariableModel =
   | OrgVariableModel
   | DashboardVariableModel
   | SnapshotVariableModel
-  | SwitchVariableModel;
+  | SwitchVariableModel
+  | StackVariableModel;
 
 export enum VariableRefresh {
   never, // removed from the UI
@@ -103,6 +104,13 @@ export interface CustomVariableModel extends VariableWithMultiSupport {
   type: 'custom';
   valuesFormat?: 'csv' | 'json';
 }
+
+export interface StackVariableModel extends VariableWithMultiSupport {
+  type: 'stack';
+  properties: StackVariableValue;
+}
+
+export type StackVariableValue = Record<string,string>;
 
 export interface DataSourceVariableModel extends VariableWithMultiSupport {
   type: 'datasource';

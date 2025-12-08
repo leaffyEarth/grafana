@@ -15,38 +15,12 @@ import {
   useStyles2,
 } from '@grafana/ui';
 import { Page } from 'app/core/components/Page/Page';
-import { ScopedResourceClient } from 'app/features/apiserver/client';
-import { Resource, ResourceList, GroupVersionResource } from 'app/features/apiserver/types';
-
-// Define the DataSourceStack spec type based on the backend Go types
-export interface DataSourceStackTemplateItem {
-  group: string;
-  name: string;
-}
-
-export interface DataSourceStackModeItem {
-  dataSourceRef: string;
-}
-
-export interface DataSourceStackModeSpec {
-  name: string;
-  uid: string;
-  definition: Record<string, DataSourceStackModeItem>;
-}
-
-export interface DataSourceStackSpec {
-  template: Record<string, DataSourceStackTemplateItem>;
-  modes: DataSourceStackModeSpec[];
-}
-
-// GroupVersionResource for datasourcestacks
-const datasourceStacksGVR: GroupVersionResource = {
-  group: 'collections.grafana.app',
-  version: 'v1alpha1',
-  resource: 'datasourcestacks',
-};
-
-const datasourceStacksClient = new ScopedResourceClient<DataSourceStackSpec>(datasourceStacksGVR);
+import { Resource } from 'app/features/apiserver/types';
+import {
+  DataSourceStackSpec,
+  fetchStacks as fetchStacksApi,
+  deleteStack,
+} from 'app/features/datasources/api/stacksApi';
 
 export function DataSourceStacksPage() {
   const [stacks, setStacks] = useState<Array<Resource<DataSourceStackSpec>>>([]);
@@ -58,8 +32,8 @@ export function DataSourceStacksPage() {
   const fetchStacks = useCallback(async () => {
     try {
       setLoading(true);
-      const response: ResourceList<DataSourceStackSpec> = await datasourceStacksClient.list();
-      setStacks(response.items);
+      const items = await fetchStacksApi();
+      setStacks(items);
     } catch (err) {
       console.error('Failed to fetch datasource stacks:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch datasource stacks');
@@ -73,7 +47,7 @@ export function DataSourceStacksPage() {
   }, [fetchStacks]);
 
   const onDeleteStack = (stackName: string) => async () => {
-    await datasourceStacksClient.delete(stackName, false);
+    await deleteStack(stackName);
     fetchStacks();
   };
 

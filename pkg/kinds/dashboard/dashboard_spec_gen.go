@@ -874,6 +874,7 @@ const (
 	VariableTypeSystem     VariableType = "system"
 	VariableTypeSnapshot   VariableType = "snapshot"
 	VariableTypeSwitch     VariableType = "switch"
+	VariableTypeStack      VariableType = "stack"
 )
 
 // Determine if the variable shows on dashboard

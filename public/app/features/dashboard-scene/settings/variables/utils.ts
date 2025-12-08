@@ -35,6 +35,8 @@ import { getIntervalVariableOptions, IntervalVariableEditor } from './editors/In
 import { getQueryVariableOptions, QueryVariableEditor } from './editors/QueryVariableEditor';
 import { getSwitchVariableOptions, SwitchVariableEditor } from './editors/SwitchVariableEditor';
 import { TextBoxVariableEditor, getTextBoxVariableOptions } from './editors/TextBoxVariableEditor';
+import { getStackVariableOptions, StackVariableEditor } from './editors/StackVariableEditor';
+import { isStackVariable, StackVariable } from './StackVariable';
 
 interface EditableVariableConfig {
   name: string;
@@ -129,6 +131,12 @@ export const getEditableVariables: () => Record<EditableVariableType, EditableVa
     editor: SwitchVariableEditor,
     getOptions: getSwitchVariableOptions,
   },
+  stack: {
+    name: "Stack",
+    description: "Users can define datasource stacks",
+    editor: StackVariableEditor,
+    getOptions: getStackVariableOptions,
+  }
 });
 
 export function getEditableVariableDefinition(type: string): EditableVariableConfig {
@@ -152,6 +160,7 @@ export const EDITABLE_VARIABLES_SELECT_ORDER: EditableVariableType[] = [
   'adhoc',
   'switch',
   'groupby',
+  'stack'
 ];
 
 export function getVariableTypeSelectOptions(): Array<SelectableValue<EditableVariableType>> {
@@ -203,6 +212,8 @@ export function getVariableScene(type: EditableVariableType, initialState: Commo
       return new TextBoxVariable(initialState);
     case 'switch':
       return new SwitchVariable(initialState);
+    case 'stack':
+      return new StackVariable(initialState);
   }
 }
 
@@ -279,7 +290,8 @@ export function isSceneVariableInstance(sceneObject: SceneObject): sceneObject i
     sceneUtils.isQueryVariable(sceneObject) ||
     sceneUtils.isTextBoxVariable(sceneObject) ||
     sceneUtils.isGroupByVariable(sceneObject) ||
-    sceneUtils.isSwitchVariable(sceneObject)
+    sceneUtils.isSwitchVariable(sceneObject) ||
+    isStackVariable(sceneObject)
   );
 }
 

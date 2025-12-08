@@ -1,3 +1,5 @@
+import { isStack } from 'immutable';
+
 import { config } from '@grafana/runtime';
 import {
   AdHocFilterWithLabels as SceneAdHocFilterWithLabels,
@@ -28,9 +30,11 @@ import {
   AdHocFilterWithLabels,
   SwitchVariableKind,
   defaultIntervalVariableSpec,
+  StackVariableKind,
 } from '@grafana/schema/dist/esm/schema/dashboard/v2';
 import { getDefaultDatasource } from 'app/features/dashboard/api/ResponseTransformers';
 
+import { isStackVariable, StackVariable } from '../settings/variables/StackVariable';
 import { getIntervalsQueryFromNewIntervalModel } from '../utils/utils';
 
 import { DSReferencesMapping } from './DashboardSceneSerializer';
@@ -231,6 +235,16 @@ export function sceneVariablesSetToVariables(set: SceneVariables, keepQueryOptio
       });
     } else if (variable.state.type === 'system') {
       // Not persisted
+    } else if (isStackVariable(variable)) {
+      variables.push({
+        ...commonProperties,
+        current: {
+          text: variable.state.text || variable.state.value,
+          value: variable.state.value,
+        },
+        properties: variable.state.properties || {},
+        options: [],
+      });
     } else {
       throw new Error('Unsupported variable type');
     }
@@ -284,6 +298,7 @@ export function sceneVariablesSetToSchemaV2Variables(
   | GroupByVariableKind
   | AdhocVariableKind
   | SwitchVariableKind
+  | StackVariableKind
 > {
   let variables: Array<
     | QueryVariableKind
@@ -295,6 +310,7 @@ export function sceneVariablesSetToSchemaV2Variables(
     | GroupByVariableKind
     | AdhocVariableKind
     | SwitchVariableKind
+    | StackVariableKind
   > = [];
 
   for (const variable of set.state.variables) {
@@ -558,6 +574,20 @@ export function sceneVariablesSetToSchemaV2Variables(
         },
       };
       variables.push(switchVariable);
+    } else if (isStackVariable(variable)) {
+      const stackVariable: StackVariableKind = {
+        kind: 'StackVariable',
+        spec: {
+          ...commonProperties,
+          options: [],
+          current: {
+            text: variable.state.text || variable.state.value,
+            value: variable.state.value,
+          },
+          properties: variable.state.properties || {},
+        },
+      };
+      variables.push(stackVariable);
     } else if (variable.state.type === 'system') {
       // Do nothing
     } else {

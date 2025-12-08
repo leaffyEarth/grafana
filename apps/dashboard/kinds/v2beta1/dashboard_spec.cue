@@ -725,9 +725,9 @@ VariableCustomFormatterFn: {
 // `custom`: Define the variable options manually using a comma-separated list.
 // `system`: Variables defined by Grafana. See: https://grafana.com/docs/grafana/latest/dashboards/variables/add-template-variables/#global-variables
 VariableType: "query" | "adhoc" | "groupby" | "constant" | "datasource" | "interval" | "textbox" | "custom" |
-	"system" | "snapshot" | "switch"
+	"system" | "snapshot" | "switch" | "stack"
 
-VariableKind: QueryVariableKind | TextVariableKind | ConstantVariableKind | DatasourceVariableKind | IntervalVariableKind | CustomVariableKind | GroupByVariableKind | AdhocVariableKind | SwitchVariableKind
+VariableKind: QueryVariableKind | TextVariableKind | ConstantVariableKind | DatasourceVariableKind | IntervalVariableKind | CustomVariableKind | GroupByVariableKind | AdhocVariableKind | SwitchVariableKind  | StackVariableKind
 
 // Sort variable options
 // Accepted values are:
@@ -936,6 +936,24 @@ SwitchVariableKind: {
 	spec: SwitchVariableSpec
 }
 
+StackVariableSpec: {
+ 	name:    	   string | *""
+	defaultValue?: VariableOption
+	current: VariableOption | *{
+		text:  ""
+		value: ""
+	}
+	options: [...VariableOption] | *[] 
+	label?:        string
+	description?:  string
+	properties: [string]: string
+}
+
+StackVariableKind: {
+	kind: "StackVariable"
+	spec: StackVariableSpec
+}
+ 
 // GroupBy variable specification
 GroupByVariableSpec: {
 	name:        string | *""

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-assertions */
 import {
   AppEvents,
   DataSourceApi,
@@ -28,6 +29,8 @@ import {
   instanceSettings as expressionInstanceSettings,
 } from 'app/features/expressions/ExpressionDatasource';
 import { ExpressionDatasourceUID } from 'app/features/expressions/types';
+
+import { StackVariableValue } from '../../../../packages/grafana-data/src/types/templateVars';
 
 import { pluginImporter } from './importer/pluginImporter';
 
@@ -306,27 +309,41 @@ export class DatasourceSrv implements DataSourceService {
 
     if (filters.variables) {
       for (const variable of this.templateSrv.getVariables()) {
-        if (variable.type !== 'datasource') {
-          continue;
-        }
-        let dsValue = variable.current.value === 'default' ? this.defaultName : variable.current.value;
-        // Support for multi-value DataSource (ds) variables
-        if (Array.isArray(dsValue)) {
-          // If the ds variable have multiple selected datasources
-          // We will use the first one
-          dsValue = dsValue[0];
-        }
-        const dsSettings =
-          !Array.isArray(dsValue) && (this.settingsMapByName[dsValue] || this.settingsMapByUid[dsValue]);
+        if (variable.type === 'datasource') {
+          let dsValue = variable.current.value === 'default' ? this.defaultName : variable.current.value;
+          // Support for multi-value DataSource (ds) variables
+          if (Array.isArray(dsValue)) {
+            // If the ds variable have multiple selected datasources
+            // We will use the first one
+            dsValue = dsValue[0];
+          }
+          const dsSettings =
+            !Array.isArray(dsValue) && (this.settingsMapByName[dsValue] || this.settingsMapByUid[dsValue]);
 
-        if (dsSettings) {
-          const key = `$\{${variable.name}\}`;
-          base.push({
-            ...dsSettings,
-            isDefault: false,
-            name: key,
-            uid: key,
-          });
+          if (dsSettings) {
+            const key = `$\{${variable.name}\}`;
+            base.push({
+              ...dsSettings,
+              isDefault: false,
+              name: key,
+              uid: key,
+            });
+          }
+        }
+        if (variable.type === 'stack') {
+          const properties = variable.properties;
+          for (const key in properties) {
+            const dsSettings = this.settingsMapByUid[properties[key]];
+
+            if (dsSettings) {
+              base.push({
+                ...dsSettings,
+                isDefault: false,
+                uid: `$\{${variable.name}.${key}\}`,
+                name: `$\{${variable.name}.${key}\}`,
+              });
+            }
+          }
         }
       }
     }

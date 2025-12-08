@@ -179,6 +179,7 @@ describe('type guards', () => {
     custom: { variable: createCustomVariable(), isMulti: true, hasOptions: true, hasCurrent: true },
     snapshot: { variable: createSnapshotVariable(), isMulti: false, hasOptions: true, hasCurrent: true },
     switch: { variable: createSwitchVariable(), isMulti: false, hasOptions: true, hasCurrent: true },
+    stack: { variable: createCustomVariable(), isMulti: true, hasOptions: true, hasCurrent: true },
   };
 
   const variableFacts = Object.values(variableFactsObj);

@@ -4,23 +4,13 @@ import { useParams } from 'react-router-dom-v5-compat';
 import { t } from '@grafana/i18n';
 import { EmptyState, Spinner } from '@grafana/ui';
 import { Page } from 'app/core/components/Page/Page';
-import { ScopedResourceClient } from 'app/features/apiserver/client';
-import { Resource, GroupVersionResource } from 'app/features/apiserver/types';
+import { Resource } from 'app/features/apiserver/types';
+import { DataSourceStackSpec, fetchStack } from 'app/features/datasources/api/stacksApi';
 import {
   StackForm,
   transformStackSpecToFormValues,
 } from 'app/features/datasources/components/new-stack-form/StackForm';
 import { StackFormValues } from 'app/features/datasources/components/new-stack-form/types';
-
-import { DataSourceStackSpec } from './DataSourceStacksPage';
-
-const datasourceStacksGVR: GroupVersionResource = {
-  group: 'collections.grafana.app',
-  version: 'v1alpha1',
-  resource: 'datasourcestacks',
-};
-
-const datasourceStacksClient = new ScopedResourceClient<DataSourceStackSpec>(datasourceStacksGVR);
 
 export function EditStackPage() {
   const { uid } = useParams<{ uid: string }>();
@@ -30,7 +20,7 @@ export function EditStackPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStack = async () => {
+    const loadStack = async () => {
       if (!uid) {
         setError('No stack UID provided');
         setLoading(false);
@@ -39,7 +29,7 @@ export function EditStackPage() {
 
       try {
         setLoading(true);
-        const response = await datasourceStacksClient.get(uid);
+        const response = await fetchStack(uid);
         setStack(response);
 
         const values = transformStackSpecToFormValues(response.metadata.name || '', response.spec);
@@ -52,7 +42,7 @@ export function EditStackPage() {
       }
     };
 
-    fetchStack();
+    loadStack();
   }, [uid]);
 
   const pageNav = {

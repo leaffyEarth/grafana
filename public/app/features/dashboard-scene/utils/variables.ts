@@ -17,6 +17,8 @@ import {
 import { DashboardModel } from 'app/features/dashboard/state/DashboardModel';
 
 import { SnapshotVariable } from '../serialization/custom-variables/SnapshotVariable';
+import { StackVariable } from '../settings/variables/StackVariable';
+
 
 import { getCurrentValueForOldIntervalModel, getIntervalsFromQueryString } from './utils';
 
@@ -308,6 +310,15 @@ export function createSceneVariableFromVariableModel(variable: TypedVariableMode
       value: pickFirstValue(variable.current?.value),
       enabledValue: pickFirstValue(variable.options?.[0]?.value),
       disabledValue: pickFirstValue(variable.options?.[1]?.value),
+      skipUrlSync: variable.skipUrlSync,
+      hide: variable.hide,
+    });
+  } else if (variable.type === 'stack') {
+    return new StackVariable({
+      ...commonProperties,
+      value: variable.current?.value ?? '',
+      text: variable.current?.text ?? '',
+      properties: (variable as any).properties || {},
       skipUrlSync: variable.skipUrlSync,
       hide: variable.hide,
     });

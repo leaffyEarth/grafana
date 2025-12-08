@@ -72,6 +72,7 @@ import { registerDashboardMacro } from '../scene/DashboardMacro';
 import { DashboardReloadBehavior } from '../scene/DashboardReloadBehavior';
 import { DashboardScene } from '../scene/DashboardScene';
 import { DashboardLayoutManager } from '../scene/types/DashboardLayoutManager';
+import { StackVariable } from '../settings/variables/StackVariable';
 import { getIntervalsFromQueryString } from '../utils/utils';
 
 import { transformV2ToV1AnnotationQuery } from './annotations';
@@ -349,6 +350,15 @@ function createSceneVariableFromVariableModel(variable: TypedVariableModelV2): S
       skipUrlSync: variable.spec.skipUrlSync,
       hide: transformVariableHideToEnumV1(variable.spec.hide),
       valuesFormat: variable.spec.valuesFormat || 'csv',
+    });
+  } else if (variable.kind === defaultStackVariableKind().kind) {
+    return new StackVariable({
+      ...commonProperties,
+      value: variable.spec.current?.value ?? '',
+      text: variable.spec.current?.text ?? '',
+      properties: variable.spec.properties || {},
+      skipUrlSync: variable.spec.skipUrlSync,
+      hide: transformVariableHideToEnumV1(variable.spec.hide),
     });
   } else if (variable.kind === defaultQueryVariableKind().kind) {
     return new QueryVariable({

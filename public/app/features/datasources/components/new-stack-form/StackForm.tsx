@@ -8,10 +8,8 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Trans } from '@grafana/i18n';
 import { Button, Stack, useStyles2 } from '@grafana/ui';
 import { useAppNotification } from 'app/core/copy/appNotification';
-import { ScopedResourceClient } from 'app/features/apiserver/client';
-import { GroupVersionResource } from 'app/features/apiserver/types';
 import { ROUTES } from 'app/features/connections/constants';
-import { DataSourceStackSpec } from 'app/features/connections/pages/DataSourceStacksPage';
+import { DataSourceStackSpec, createStack, updateStack, fetchStack } from 'app/features/datasources/api/stacksApi';
 
 import { StackModes } from './StackModes';
 import { StackName } from './StackName';
@@ -27,15 +25,6 @@ const defaultValues: StackFormValues = {
   templates: [],
   modes: [],
 };
-
-// GroupVersionResource for datasourcestacks
-const datasourceStacksGVR: GroupVersionResource = {
-  group: 'collections.grafana.app',
-  version: 'v1alpha1',
-  resource: 'datasourcestacks',
-};
-
-const datasourceStacksClient = new ScopedResourceClient<DataSourceStackSpec>(datasourceStacksGVR);
 
 export const StackForm = ({ existing }: Props) => {
   const styles = useStyles2(getStyles);
@@ -68,18 +57,12 @@ export const StackForm = ({ existing }: Props) => {
     try {
       if (isEditing) {
         // Update existing stack
-        const existingStack = await datasourceStacksClient.get(values.name);
-        await datasourceStacksClient.update({
-          ...existingStack,
-          spec,
-        });
+        const existingStack = await fetchStack(values.name);
+        await updateStack(existingStack, spec);
         notifyApp.success('Stack updated successfully!');
       } else {
         // Create new stack
-        await datasourceStacksClient.create({
-          metadata: { name: values.name },
-          spec,
-        });
+        await createStack(values.name, spec);
         notifyApp.success('Stack created successfully!');
       }
 
