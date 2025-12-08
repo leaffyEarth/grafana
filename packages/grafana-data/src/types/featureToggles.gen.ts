@@ -1211,4 +1211,9 @@ export interface FeatureToggles {
   * Adds support for Kubernetes alerting historian APIs
   */
   kubernetesAlertingHistorian?: boolean;
+  /**
+  * Test non-bool feature flag
+  * @default blue
+  */
+  blueFlag?: boolean;
 }

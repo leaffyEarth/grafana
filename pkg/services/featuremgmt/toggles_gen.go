@@ -769,4 +769,8 @@ const (
 	// FlagKubernetesAlertingHistorian
 	// Adds support for Kubernetes alerting historian APIs
 	FlagKubernetesAlertingHistorian = "kubernetesAlertingHistorian"
+
+	// FlagBlueFlag
+	// Test non-bool feature flag
+	FlagBlueFlag = "blueFlag"
 )
