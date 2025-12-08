@@ -2000,6 +2000,34 @@ var (
 			Owner:           grafanaAlertingSquad,
 			RequiresRestart: true,
 		},
+		{
+			Name:        "stringFlag",
+			Description: "Test non-bool feature flag of type string",
+			Stage:       FeatureStageExperimental,
+			Expression:  "blue",
+			Type:        String,
+		},
+		{
+			Name:        "numberFlag",
+			Description: "Test non-boolean feature flag of type number",
+			Stage:       FeatureStageExperimental,
+			Expression:  "1.0",
+			Type:        Number,
+		},
+		{
+			Name:        "booleanFlag",
+			Description: "Test non-boolean feature flag of type boolean",
+			Stage:       FeatureStageExperimental,
+			Expression:  "true",
+			Type:        Boolean,
+		},
+		{
+			Name:        "objectFlag",
+			Description: "Test non-boolean feature flag of type object",
+			Stage:       FeatureStageExperimental,
+			Expression:  `{"key": "value"}`,
+			Type:        Object,
+		},
 	}
 )
 
