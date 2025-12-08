@@ -50,5 +50,5 @@ func ProvideAppInstaller(accessControlService accesscontrol.Service, accessClien
 }
 
 func (a *AppInstaller) GetAuthorizer() authorizer.Authorizer {
-	return pluginsapp.GetAuthorizer()
+	return a.PluginAppInstaller.GetAuthorizer()
 }
