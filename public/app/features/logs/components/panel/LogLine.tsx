@@ -508,6 +508,15 @@ export const getStyles = (theme: GrafanaTheme2, virtualization?: LogLineVirtuali
         },
       },
       '& .log-syntax-highlight': {
+        '.log-token-shield': {
+          color: colors.info,
+        },
+        '.log-token-player': {
+          color: colors.debug,
+        },
+        '.log-token-ufo': {
+          color: colors.error,
+        },
         '.log-token-string': {
           color: colors.default,
         },
