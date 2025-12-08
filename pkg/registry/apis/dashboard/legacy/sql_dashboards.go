@@ -139,15 +139,6 @@ func NewDashboardSQLAccess(sql legacysql.LegacyDatabaseProvider,
 	}
 }
 
-func (a *dashboardSqlAccess) executeQuery(ctx context.Context, helper *legacysql.LegacyDatabaseHelper, query string, args ...any) (*sql.Rows, error) {
-	// Use transaction if available in context.
-	// This allows us to run migrations in a transaction which is specifically required for SQLite.
-	if tx := resource.TransactionFromContext(ctx); tx != nil {
-		return tx.QueryContext(ctx, query, args...)
-	}
-	return helper.DB.GetSqlxSession().Query(ctx, query, args...)
-}
-
 func (a *dashboardSqlAccess) getRows(ctx context.Context, helper *legacysql.LegacyDatabaseHelper, query *DashboardQuery) (*rowsWrapper, error) {
 	ctx, span := tracer.Start(ctx, "legacy.dashboardSqlAccess.getRows")
 	defer span.End()
@@ -177,7 +168,7 @@ func (a *dashboardSqlAccess) getRows(ctx context.Context, helper *legacysql.Lega
 	//	 fmt.Printf("DASHBOARD QUERY: %s [%+v] // %+v\n", pretty, req.GetArgs(), query)
 	// }
 
-	rows, err := a.executeQuery(ctx, helper, q, req.GetArgs()...)
+	rows, err := helper.DB.GetSqlxSession().Query(ctx, q, req.GetArgs()...)
 	if err != nil {
 		if rows != nil {
 			_ = rows.Close()
@@ -1051,7 +1042,7 @@ func (a *dashboardSqlAccess) GetLibraryPanels(ctx context.Context, query Library
 	}
 
 	res := &dashboardV0.LibraryPanelList{}
-	rows, err := a.executeQuery(ctx, helper, rawQuery, req.GetArgs()...)
+	rows, err := helper.DB.GetSqlxSession().Query(ctx, rawQuery, req.GetArgs()...)
 	defer func() {
 		if rows != nil {
 			_ = rows.Close()
@@ -1192,7 +1183,7 @@ func (a *dashboardSqlAccess) ListPlaylists(ctx context.Context, orgID int64) (*s
 		return nil, fmt.Errorf("execute template %q: %w", sqlQueryPlaylists.Name(), err)
 	}
 
-	rows, err := a.executeQuery(ctx, helper, rawQuery, req.GetArgs()...)
+	rows, err := helper.DB.GetSqlxSession().Query(ctx, rawQuery, req.GetArgs()...)
 	if err != nil && rows != nil {
 		_ = rows.Close()
 		return nil, err
