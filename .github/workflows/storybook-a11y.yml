@@ -11,7 +11,7 @@ permissions: {}
 jobs:
   detect-changes:
     name: Detect whether code changed
-    runs-on: ubuntu-latest
+    runs-on: monkci-runners-4vcpu
     permissions:
       contents: read
     outputs:
@@ -28,7 +28,7 @@ jobs:
           self: .github/workflows/storybook-a11y.yml
 
   test-storybook-a11y-light:
-    runs-on: ubuntu-latest-8-cores
+    runs-on: monkci-runners-4vcpu
     permissions:
       contents: read
       id-token: write
@@ -58,7 +58,7 @@ jobs:
       run: npx wait-on --timeout 120000 http://localhost:9001 && yarn test:storybook
 
   test-storybook-a11y-dark:
-    runs-on: ubuntu-latest-8-cores
+    runs-on: monkci-runners-4vcpu
     permissions:
       contents: read
       id-token: write
