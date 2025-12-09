@@ -41,9 +41,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    # Run this workflow only for PRs from forks; if it gets merged into `main` or `release-*`,
-    # the `lint-frontend-prettier-enterprise` workflow will run instead
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true && needs.detect-changes.outputs.prettier == 'true'
+    # Run on pull requests or pushes (enterprise version disabled for forks)
+    if: (github.event_name == 'pull_request' || github.event_name == 'push') && needs.detect-changes.outputs.prettier == 'true'
     name: Lint
     runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
@@ -105,9 +104,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    # Run this workflow only for PRs from forks; if it gets merged into `main` or `release-*`,
-    # the `lint-frontend-typecheck-enterprise` workflow will run instead
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true && needs.detect-changes.outputs.changed == 'true'
+    # Run on pull requests or pushes (enterprise version disabled for forks)
+    if: (github.event_name == 'pull_request' || github.event_name == 'push') && needs.detect-changes.outputs.changed == 'true'
     name: Typecheck
     runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
@@ -166,9 +164,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    # Run this workflow only for PRs from forks; if it gets merged into `main` or `release-*`,
-    # the `lint-frontend-api-clients-enterprise` workflow will run instead
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
+    # Run on pull requests or pushes (enterprise version disabled for forks)
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     name: Verify API clients
     runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
