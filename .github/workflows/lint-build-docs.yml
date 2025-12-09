@@ -20,10 +20,10 @@ permissions: {}
 
 jobs:
   docs:
-    # Run on `grafana/grafana` main branch, or on pull requests to prevent double-running on mirrors
-    if: (github.event_name == 'pull_request' || (github.event_name == 'push' && github.repository == 'grafana/grafana'))
+    # Run on pull requests or pushes (removed repository check for fork compatibility)
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     name: Build & Verify Docs
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
 
     permissions:
       contents: read
