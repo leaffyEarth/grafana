@@ -11,17 +11,25 @@ permissions: {}
 jobs:
   detect-changes:
     name: Detect whether code changed
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     permissions:
       contents: read
     outputs:
       changed: ${{ steps.detect-changes.outputs.frontend }}
       prettier: ${{ steps.detect-changes.outputs.frontend == 'true' || steps.detect-changes.outputs.docs == 'true' }}
     steps:
-      - uses: actions/checkout@v5
-        with:
-          persist-credentials: true # required to get more history in the changed-files action
-          fetch-depth: 2
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
+    - uses: actions/checkout@v5
+      with:
+        persist-credentials: true # required to get more history in the changed-files action
+        fetch-depth: 2
+        clean: true
       - name: Detect changes
         id: detect-changes
         uses: ./.github/actions/change-detection
@@ -37,11 +45,19 @@ jobs:
     # the `lint-frontend-prettier-enterprise` workflow will run instead
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true && needs.detect-changes.outputs.prettier == 'true'
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - uses: actions/checkout@v5
       with:
         persist-credentials: false
+        clean: true
     - uses: actions/setup-node@v6
       with:
         node-version-file: '.nvmrc'
@@ -55,20 +71,29 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    # Run this workflow for non-PR events (like pushes to `main` or `release-*`) OR for internal PRs (PRs not from forks)
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false && needs.detect-changes.outputs.prettier == 'true'
+    # Disabled - requires enterprise setup with Vault credentials
+    if: false
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - uses: actions/checkout@v5
       with:
         persist-credentials: false
+        clean: true
     - uses: actions/setup-node@v6
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
         cache-dependency-path: 'yarn.lock'
     - name: Setup Enterprise
+      if: false  # Disabled - requires Vault credentials not available in forks
       uses: ./.github/actions/setup-enterprise
       with:
         github-app-name: 'grafana-ci-bot'
@@ -84,11 +109,19 @@ jobs:
     # the `lint-frontend-typecheck-enterprise` workflow will run instead
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true && needs.detect-changes.outputs.changed == 'true'
     name: Typecheck
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - uses: actions/checkout@v5
       with:
         persist-credentials: false
+        clean: true
     - uses: actions/setup-node@v6
       with:
         node-version-file: '.nvmrc'
@@ -101,20 +134,29 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    # Run this workflow for non-PR events (like pushes to `main` or `release-*`) OR for internal PRs (PRs not from forks)
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false && needs.detect-changes.outputs.changed == 'true'
+    # Disabled - requires enterprise setup with Vault credentials
+    if: false
     name: Typecheck
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - uses: actions/checkout@v5
       with:
         persist-credentials: false
+        clean: true
     - uses: actions/setup-node@v6
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
         cache-dependency-path: 'yarn.lock'
     - name: Setup Enterprise
+      if: false  # Disabled - requires Vault credentials not available in forks
       uses: ./.github/actions/setup-enterprise
       with:
         github-app-name: 'grafana-ci-bot'
@@ -128,11 +170,19 @@ jobs:
     # the `lint-frontend-api-clients-enterprise` workflow will run instead
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
     name: Verify API clients
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - uses: actions/checkout@v5
       with:
         persist-credentials: false
+        clean: true
     - uses: actions/setup-node@v6
       with:
         node-version-file: '.nvmrc'
@@ -156,20 +206,29 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    # Run this workflow for non-PR events (like pushes to `main` or `release-*`) OR for internal PRs (PRs not from forks)
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false
+    # Disabled - requires enterprise setup with Vault credentials
+    if: false
     name: Verify API clients (enterprise)
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+    - name: Clean workspace
+      run: |
+        chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+        rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+      continue-on-error: true
+
     - uses: actions/checkout@v5
       with:
         persist-credentials: false
+        clean: true
     - uses: actions/setup-node@v6
       with:
         node-version-file: '.nvmrc'
         cache: 'yarn'
         cache-dependency-path: 'yarn.lock'
     - name: Setup Enterprise
+      if: false  # Disabled - requires Vault credentials not available in forks
       uses: ./.github/actions/setup-enterprise
       with:
         github-app-name: 'grafana-ci-bot'
