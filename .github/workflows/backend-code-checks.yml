@@ -17,16 +17,24 @@ on:
 jobs:
   detect-changes:
     name: Detect whether code changed
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     permissions:
       contents: read
     outputs:
       changed: ${{ steps.detect-changes.outputs.backend }}
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+
       - uses: actions/checkout@v5
         with:
           persist-credentials: true # required to get more history in the changed-files action
           fetch-depth: 2
+          clean: true
       - name: Detect changes
         id: detect-changes
         uses: ./.github/actions/change-detection
@@ -40,11 +48,19 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.changed == 'true'
     name: Validate Backend Configs
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+          clean: true
       - name: Setup Go
         uses: actions/setup-go@v6.0.0
         with:

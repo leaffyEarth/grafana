@@ -14,19 +14,27 @@ permissions:
 
 jobs:
   detect-changes:
-    # Run on `grafana/grafana` main branch, or on pull requests to prevent double-running on mirrors
-    if: (github.event_name == 'pull_request' || (github.event_name == 'push' && github.repository == 'grafana/grafana'))
+    # Run on pull requests or pushes (removed repository check for fork compatibility)
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     name: Detect whether code changed
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     permissions:
       contents: read
     outputs:
       changed: ${{ steps.detect-changes.outputs.backend }}
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+
       - uses: actions/checkout@v5
         with:
           persist-credentials: true # required to get more history in the changed-files action
           fetch-depth: 2
+          clean: true
       - name: Detect changes
         id: detect-changes
         uses: ./.github/actions/change-detection
@@ -36,11 +44,19 @@ jobs:
   go-fmt:
     needs: detect-changes
     if: needs.detect-changes.outputs.changed == 'true'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+          clean: true
       - uses: actions/setup-go@v6.0.0
         with:
           go-version-file: ./go.mod
@@ -57,11 +73,19 @@ jobs:
   lint-go:
     needs: detect-changes
     if: needs.detect-changes.outputs.changed == 'true'
-    runs-on: ubuntu-x64-large-io
+    runs-on: [self-hosted, monkci-runners-8vcpu]
     steps:
+      - name: Clean workspace
+        run: |
+          chmod -R u+w ${{ github.workspace }} 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/.git 2>/dev/null || true
+          rm -rf ${{ github.workspace }}/* 2>/dev/null || true
+        continue-on-error: true
+
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
+          clean: true
       - uses: actions/setup-go@v6.0.0
         with:
           go-version-file: ./go.mod
