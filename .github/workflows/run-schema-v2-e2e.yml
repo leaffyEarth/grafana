@@ -13,7 +13,7 @@ env:
 
 jobs:
   dashboard-schema-v2-e2e:
-    runs-on: monkci-runners-4vcpu
+    runs-on: linux_4_core
     continue-on-error: true
     steps:
       - name: Checkout
